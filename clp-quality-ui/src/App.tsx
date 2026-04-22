@@ -187,57 +187,12 @@ export default function App() {
 
   async function handleAudit() {
     if (!url.trim()) return;
-    setLoading(true);
-    setError("");
-    setResult(null);
-    setFilter(null);
-    setLoadingMsg(0);
-
-    const msgInterval = setInterval(() => {
-      setLoadingMsg(prev => (prev + 1) % LOADING_MESSAGES.length);
-    }, 2200);
-
-    try {
-      const res = await fetch("/api/audit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || `HTTP ${res.status}`);
-      }
-      setResult(await res.json());
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      clearInterval(msgInterval);
-      setLoading(false);
-    }
+    setError("Backend API not available in GitHub Pages. This feature requires a running Express server at localhost:3100");
   }
 
   async function handleFigmaCompare() {
     if (!figmaUrl.trim() || !pageUrl.trim()) return;
-    setFigmaLoading(true);
-    setFigmaError("");
-    setFigmaResult(null);
-
-    try {
-      const res = await fetch("/api/figma-compare", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ figmaUrl: figmaUrl.trim(), pageUrl: pageUrl.trim() }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || `HTTP ${res.status}`);
-      }
-      setFigmaResult(await res.json());
-    } catch (err: any) {
-      setFigmaError(err.message);
-    } finally {
-      setFigmaLoading(false);
-    }
+    setFigmaError("Backend API not available in GitHub Pages. This feature requires a running Express server at localhost:3100");
   }
 
   return (
