@@ -1,0 +1,20 @@
+{
+  "name": "clp-auditor",
+  "version": "1.0.0",
+  "description": "CLP Quality Auditor + Figma-to-Code Design System Checker",
+  "type": "module",
+  "scripts": {
+    "audit": "tsx src/run-audit.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "glob": "^11.0.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "@types/node": "^22.0.0"
+  }
+}
