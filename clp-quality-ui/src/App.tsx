@@ -187,12 +187,57 @@ export default function App() {
 
   async function handleAudit() {
     if (!url.trim()) return;
-    setError("Backend API not available in GitHub Pages. This feature requires a running Express server at localhost:3100");
+    setLoading(true);
+    setError("");
+    setResult(null);
+    setFilter(null);
+    setLoadingMsg(0);
+
+    const msgInterval = setInterval(() => {
+      setLoadingMsg(prev => (prev + 1) % LOADING_MESSAGES.length);
+    }, 2200);
+
+    try {
+      const res = await fetch("/api/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      setResult(await res.json());
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      clearInterval(msgInterval);
+      setLoading(false);
+    }
   }
 
   async function handleFigmaCompare() {
     if (!figmaUrl.trim() || !pageUrl.trim()) return;
-    setFigmaError("Backend API not available in GitHub Pages. This feature requires a running Express server at localhost:3100");
+    setFigmaLoading(true);
+    setFigmaError("");
+    setFigmaResult(null);
+
+    try {
+      const res = await fetch("/api/figma-compare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ figmaUrl: figmaUrl.trim(), pageUrl: pageUrl.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      setFigmaResult(await res.json());
+    } catch (err: any) {
+      setFigmaError(err.message);
+    } finally {
+      setFigmaLoading(false);
+    }
   }
 
   return (
@@ -762,13 +807,14 @@ function SplitSlider({ beforeSrc, afterSrc, beforeLabel, afterLabel }: {
   );
 }
 
+const BASE_URL = import.meta.env.BASE_URL;
 const TRACKS = [
-  { name: "Hanging Lanterns", file: "/music/vibin-out.mp3", color: "oklch(0.65 0.19 155)" },
-  { name: "Cozy Alone", file: "/music/tadow.mp3", color: "oklch(0.7 0.18 40)" },
-  { name: "Lounge Chill", file: "/music/lying-together.mp3", color: "oklch(0.65 0.17 270)" },
-  { name: "Let The Rain Fall", file: "/music/go-back-home.mp3", color: "oklch(0.6 0.15 200)" },
-  { name: "Lo-Fi Radio", file: "/music/skyline.mp3", color: "oklch(0.7 0.18 85)" },
-  { name: "1AM Study Session", file: "/music/street-musik.mp3", color: "oklch(0.65 0.2 10)" },
+  { name: "Hanging Lanterns", file: `${BASE_URL}music/vibin-out.mp3`, color: "oklch(0.65 0.19 155)" },
+  { name: "Cozy Alone", file: `${BASE_URL}music/tadow.mp3`, color: "oklch(0.7 0.18 40)" },
+  { name: "Lounge Chill", file: `${BASE_URL}music/lying-together.mp3`, color: "oklch(0.65 0.17 270)" },
+  { name: "Let The Rain Fall", file: `${BASE_URL}music/go-back-home.mp3`, color: "oklch(0.6 0.15 200)" },
+  { name: "Lo-Fi Radio", file: `${BASE_URL}music/skyline.mp3`, color: "oklch(0.7 0.18 85)" },
+  { name: "1AM Study Session", file: `${BASE_URL}music/street-musik.mp3`, color: "oklch(0.65 0.2 10)" },
 ];
 
 function JogWheel() {
